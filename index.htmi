@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استخراج النص من الصورة</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
+</head>
+<body>
+
+    <h2>استخراج النص باستخدام Tesseract.js</h2>
+
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="extractText()">استخراج النص</button>
+
+    <h3>النص المستخرج:</h3>
+    <p id="output"></p>
+
+    <script>
+        function extractText() {
+            let imageInput = document.getElementById("imageInput").files[0];
+            if (!imageInput) {
+                alert("يرجى اختيار صورة أولاً!");
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function () {
+                Tesseract.recognize(
+                    reader.result,
+                    'ara+eng', // يدعم العربية والإنجليزية
+                    {
+                        logger: m => console.log(m) // لمراقبة التقدم
+                    }
+                ).then(({ data: { text } }) => {
+                    document.getElementById("output").innerText = text;
+                }).catch(error => {
+                    document.getElementById("output").innerText = "حدث خطأ أثناء استخراج النص!";
+                    console.error(error);
+                });
+            };
+            reader.readAsDataURL(imageInput);
+        }
+    </script>
+
+</body>
+</html>
